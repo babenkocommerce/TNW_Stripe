@@ -29,6 +29,8 @@ class PaymentDataBuilder implements BuilderInterface
     const DESCRIPTION = 'description';
     const CAPTURE = 'capture';
     const RECEIPT_EMAIL = 'receipt_email';
+    const CONFIRM = 'confirm';
+    
 
 
     /** @var SubjectReader  */
@@ -63,7 +65,7 @@ class PaymentDataBuilder implements BuilderInterface
             self::AMOUNT => $this->formatPrice($this->subjectReader->readAmount($subject)),
             self::DESCRIPTION => $order->getOrderIncrementId(),
             self::CURRENCY => $order->getCurrencyCode(),
-            self::CAPTURE => false
+            self::CONFIRM => true
         ];
 
         if ($this->config->isReceiptEmailEnabled()) {

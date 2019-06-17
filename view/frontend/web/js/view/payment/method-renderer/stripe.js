@@ -324,6 +324,7 @@ define([
        * Triggers order placing
        */
       placeOrderClick: function () {
+        alert("inside");
         var self = this;
 
         if (!this.validateCardType() || !this.validate() || !additionalValidators.validate()) {

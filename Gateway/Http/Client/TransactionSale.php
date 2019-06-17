@@ -28,6 +28,8 @@ class TransactionSale extends AbstractTransaction
         $storeId = $data['store_id'] ? $data['store_id'] : null;
         // sending store id and other additional keys are restricted by Stripe API
         unset($data['store_id']);
+        unset($data['capture']);
+        unset($data['source']);
 
         return $this->adapterFactory->create($storeId)
             ->sale($data);

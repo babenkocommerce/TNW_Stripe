@@ -206,6 +206,7 @@ define([
      * Convert card information to stripe token
      */
     createToken: function () {
+      alert("insdi");
       var self = this;
       var container = $('#' + this.container);
 
@@ -215,6 +216,7 @@ define([
         if (response.error) {
           defer.reject(response.error.message);
         } else {
+          alert("test");
           container.find('#' + self.code + '_cc_token').val(response.source.id);
           defer.resolve();
         }

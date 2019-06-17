@@ -60,12 +60,47 @@ define([
                 .mount(this.config.hostedFields.cvc.selector);
         },
 
+
+        /**
+         * create source by cart
+         * @return {jQuery.Deferred}
+         */
+        createPaymentMethodByCart: function (sourceData) {
+            console.log(sourceData);
+            alert('One Pay');
+            return this.createPaymentMethod.call(this, this.stripeCardNumber, sourceData);
+        },
+
         /**
          * create source by cart
          * @return {jQuery.Deferred}
          */
         createSourceByCart: function (sourceData) {
+            alert('One');
             return this.createSource.call(this, this.stripeCardNumber, sourceData);
+        },
+
+        /**
+         * create source
+         * @return {jQuery.Deferred}
+         */
+        createPaymentMethod: function () {
+            var self = this,
+                dfd = $.Deferred();
+            alert("create Payment Method");
+            console.log(this.getApiClient());
+            this.getApiClient()
+                .createPaymentMethod.apply(this.getApiClient(), 'card',arguments)
+                .then(function (response) {
+                    if (response.error) {
+                        self.showError(response.error.message);
+                        dfd.reject(response);
+                    } else {
+                        dfd.resolve(response);
+                    }
+                });
+
+            return dfd;
         },
 
         /**
@@ -75,7 +110,7 @@ define([
         createSource: function () {
             var self = this,
                 dfd = $.Deferred();
-
+            alert("create Soucre");
             this.getApiClient()
                 .createSource.apply(this.getApiClient(), arguments)
                 .then(function (response) {

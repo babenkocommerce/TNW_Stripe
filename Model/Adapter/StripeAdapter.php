@@ -18,6 +18,7 @@ namespace TNW\Stripe\Model\Adapter;
 use Stripe\Customer;
 use Stripe\Stripe;
 use Stripe\Charge;
+use Stripe\PaymentIntent;
 
 class StripeAdapter
 {
@@ -28,6 +29,7 @@ class StripeAdapter
     public function __construct($secretKey)
     {
         $this->secretKey($secretKey);
+        $this->setApiVersion();
     }
 
     /**
@@ -37,6 +39,18 @@ class StripeAdapter
     {
         Stripe::setApiKey($value);
     }
+
+
+    /**
+     * @param string|null $value
+     */
+    public function setApiVersion()
+    {
+        Stripe::setApiVersion("2019-05-16");
+    }
+
+
+
 
     /**
      * @param $transactionId
@@ -55,7 +69,7 @@ class StripeAdapter
      */
     public function sale(array $attributes)
     {
-        return Charge::create($attributes);
+        return PaymentIntent::create($attributes);
     }
 
     /**
@@ -65,8 +79,8 @@ class StripeAdapter
      */
     public function capture($transactionId, $amount = null)
     {
-        return Charge::retrieve($transactionId)
-            ->capture(['amount' => $amount]);
+        return PaymentIntent::retrieve($transactionId)
+            ->capture(['amount_to_capture' => $amount]);
     }
 
     /**
