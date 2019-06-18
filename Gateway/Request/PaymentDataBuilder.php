@@ -65,7 +65,8 @@ class PaymentDataBuilder implements BuilderInterface
             self::AMOUNT => $this->formatPrice($this->subjectReader->readAmount($subject)),
             self::DESCRIPTION => $order->getOrderIncrementId(),
             self::CURRENCY => $order->getCurrencyCode(),
-            self::CONFIRM => true
+            self::CONFIRM => true,
+            'confirmation_method' => 'manual'
         ];
 
         if ($this->config->isReceiptEmailEnabled()) {

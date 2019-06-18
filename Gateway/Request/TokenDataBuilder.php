@@ -56,7 +56,7 @@ class TokenDataBuilder implements BuilderInterface
             $result[self::SOURCE] = $token;
         }
 
-        $result[self::METHOD] = 'stripe';
+        $result[self::METHOD] = $token;
 
         return $result;
     }

@@ -17,6 +17,7 @@ define([
         config: {},
         checkout: null,
         stripeCardNumber: null,
+        stripeCardElements: null,
 
         /**
          * Get Stripe api client
@@ -43,14 +44,14 @@ define([
 
             var style = {
                 base: {
-                    fontSize: '17px'
+                    fontSize: '15px'
                 }
             };
 
             this.stripeCardNumber = stripeCardElement.create('cardNumber', {style: style});
             this.stripeCardNumber.mount(this.config.hostedFields.number.selector);
+            
             this.stripeCardNumber.on('change', this.config.hostedFields.onFieldEvent);
-
             stripeCardElement
                 .create('cardExpiry', {style: style})
                 .mount(this.config.hostedFields.expiry.selector);
@@ -58,6 +59,8 @@ define([
             stripeCardElement
                 .create('cardCvc', {style: style})
                 .mount(this.config.hostedFields.cvc.selector);
+
+                this.stripeCardElements = stripeCardElement;
         },
 
 
@@ -67,7 +70,7 @@ define([
          */
         createPaymentMethodByCart: function (sourceData) {
             console.log(sourceData);
-            alert('One Pay');
+            console.log('One Pay');
             return this.createPaymentMethod.call(this, this.stripeCardNumber, sourceData);
         },
 
@@ -76,7 +79,7 @@ define([
          * @return {jQuery.Deferred}
          */
         createSourceByCart: function (sourceData) {
-            alert('One');
+            console.log('One');
             return this.createSource.call(this, this.stripeCardNumber, sourceData);
         },
 
@@ -87,15 +90,20 @@ define([
         createPaymentMethod: function () {
             var self = this,
                 dfd = $.Deferred();
-            alert("create Payment Method");
-            console.log(this.getApiClient());
+              
+            console.log(this.stripeCardElements);
+     
             this.getApiClient()
-                .createPaymentMethod.apply(this.getApiClient(), 'card',arguments)
+               //.createPaymentMethod('card', this.stripeCardElements, arguments)
+               .createPaymentMethod('card',this.stripeCardNumber)
                 .then(function (response) {
                     if (response.error) {
+                        console.log(response);
+                        console.log(response.error.message);
                         self.showError(response.error.message);
                         dfd.reject(response);
                     } else {
+                        console.log(response);
                         dfd.resolve(response);
                     }
                 });
