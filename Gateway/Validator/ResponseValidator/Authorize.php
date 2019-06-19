@@ -25,7 +25,13 @@ class Authorize extends ResponseValidator
             parent::getResponseValidators(),
             [
                 function ($response) {
-                    if ($response['outcome']['network_status'] !== 'approved_by_network') {
+    
+                    
+                    $objArray = \Stripe\Util\Util::convertStripeObjectToArray($response['charges']);
+                    $objArray = $objArray[0];
+
+                   // $s544 = count($s533->data);
+                    if ($objArray['outcome']['network_status'] !== 'approved_by_network') {
                         return [false, [__('Transaction has been declined')]];
                     }
 

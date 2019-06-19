@@ -64,7 +64,10 @@ class PaymentDetailsHandler implements HandlerInterface
         $payment->setCcTransId($transaction['id']);
         $payment->setLastTransId($transaction['id']);
 
-        $outcome = $transaction['outcome'];
+
+        $objArray = \Stripe\Util\Util::convertStripeObjectToArray($transaction['charges']);
+        $objArray = $objArray[0];
+        $outcome = $objArray['outcome'];
 
         //remove previously set payment token
         //$payment->unsAdditionalInformation('cc_token');

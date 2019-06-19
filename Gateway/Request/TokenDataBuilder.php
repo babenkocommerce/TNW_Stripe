@@ -53,11 +53,9 @@ class TokenDataBuilder implements BuilderInterface
         }
 
         if ($token = $payment->getAdditionalInformation('cc_token')) {
-            $result[self::SOURCE] = $token;
+            $result[self::METHOD] = $token;
         }
-
-        $result[self::METHOD] = $token;
-
+        
         return $result;
     }
 }
