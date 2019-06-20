@@ -351,7 +351,7 @@ define([
           console.log(card.three_d_secure_usage.supported);
           console.log(card);
 
-          if (card.three_d_secure_usage.supported !== true) {
+          if (card.three_d_secure !== 'required') {
             console.log('sss');
             self.setPaymentMethodToken(response.paymentMethod.id);
             self.placeOrder();
