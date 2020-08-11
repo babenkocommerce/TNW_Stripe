@@ -46,7 +46,7 @@ class CardDetailsHandler implements HandlerInterface
     public function handle(array $subject, array $response)
     {
         $paymentDataObject = $this->subjectReader->readPayment($subject);
-        $transaction = $this->subjectReader->readTransaction($response);
+        $this->subjectReader->readTransaction($response);
 
         /** @var \Magento\Sales\Model\Order\Payment $payment */
         $payment = $paymentDataObject->getPayment();
