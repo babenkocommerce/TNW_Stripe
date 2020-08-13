@@ -19,6 +19,7 @@ use Magento\Payment\Gateway\Helper\ContextHelper;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use TNW\Stripe\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Response\HandlerInterface;
+use Magento\Payment\Model\Config;
 
 class CardDetailsHandler implements HandlerInterface
 {
@@ -29,13 +30,13 @@ class CardDetailsHandler implements HandlerInterface
      */
     private $subjectReader;
 
-    /**
-     * Constructor.
-     * @param SubjectReader $subjectReader
-     */
+    private $typeMapper;
+
     public function __construct(
-        SubjectReader $subjectReader
+        SubjectReader $subjectReader,
+        Config $typeMapper
     ) {
+        $this->typeMapper = $typeMapper;
         $this->subjectReader = $subjectReader;
     }
 
@@ -64,6 +65,34 @@ class CardDetailsHandler implements HandlerInterface
         $ccExpMonth = $payment->getAdditionalInformation('cc_exp_month') ? : $expMonth;
         $ccExpYear = $payment->getAdditionalInformation('cc_exp_year') ? : $ccExpYear;
         $ccType = $payment->getAdditionalInformation('cc_type') ? : $payment->getType();
+
+        if (
+            !$ccLats4
+            && !$ccExpMonth
+            && !$ccExpYear
+            && isset($response['object'])
+            && $response['object'] instanceof \Stripe\PaymentIntent
+        ) {
+            $paymentIntentObject = $response['object'];
+            $charges = $paymentIntentObject->__get('charges');
+            if ($charges && $charges instanceof \Stripe\Collection) {
+                foreach ($charges as $charge) {
+                    if ($charge instanceof \Stripe\Charge) {
+                        $paymentMethodDetails = $charge
+                            ->__get('payment_method_details')
+                            ->__get('card');
+                        $cardData = $paymentMethodDetails->toArray();
+                        $ccLats4 =  isset($cardData['last4']) ? $cardData['last4'] : $ccExpMonth;
+                        $ccExpMonth = isset($cardData['exp_month']) ? $cardData['exp_month'] : $ccExpMonth;
+                        $ccExpYear =  isset($cardData['exp_year']) ? $cardData['exp_year'] : $ccExpMonth;
+                    }
+                }
+            }
+        }
+        $ccTypes = $this->typeMapper->getCcTypes();
+        if (array_key_exists($ccType, $ccTypes)) {
+            $ccType = $ccTypes[$ccType];
+        }
 
         $payment->setCcLast4($ccLats4);
         $payment->setCcExpMonth($ccExpMonth);
