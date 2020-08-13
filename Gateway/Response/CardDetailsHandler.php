@@ -52,16 +52,32 @@ class CardDetailsHandler implements HandlerInterface
         $payment = $paymentDataObject->getPayment();
         ContextHelper::assertOrderPayment($payment);
 
-        $ccLats4 = $payment->getAdditionalInformation('cc_last4');
-        $ccExpMonth = $payment->getAdditionalInformation('cc_exp_month');
-        $ccExpYear = $payment->getAdditionalInformation('cc_exp_year');
-        $ccType = $payment->getAdditionalInformation('cc_type');
+        $ccLats4 = $payment->getAdditionalInformation('cc_last4') ? : $payment->getData('maskedCC');
+        $expirationDate = $payment->getData('expirationDate');
+        $expMonth = '';
+        $ccExpYear = '';
+        if ($expirationDate) {
+            $expirationDate = explode('/', $expirationDate);
+            $expMonth = isset($expirationDate[0]) ? $expirationDate[0] : '';
+            $ccExpYear = isset($expirationDate[1]) ? $expirationDate[1] : '';
+        }
+        $ccExpMonth = $payment->getAdditionalInformation('cc_exp_month') ? : $expMonth;
+        $ccExpYear = $payment->getAdditionalInformation('cc_exp_year') ? : $ccExpYear;
+        $ccType = $payment->getAdditionalInformation('cc_type') ? : $payment->getType();
 
         $payment->setCcLast4($ccLats4);
         $payment->setCcExpMonth($ccExpMonth);
         $payment->setCcExpYear($ccExpYear);
         $payment->setCcType($ccType);
-
+        if ($payment->getAdditionalInformation('risk_level')) {
+            $payment->unsAdditionalInformation('risk_level');
+        }
+        if ($payment->getAdditionalInformation('type')) {
+            $payment->unsAdditionalInformation('type');
+        }
+        if ($payment->getAdditionalInformation('seller_message')) {
+            $payment->unsAdditionalInformation('seller_message');
+        }
         // set card details to additional info
         $payment->setAdditionalInformation(self::CARD_NUMBER, "xxxx-{$ccLats4}");
         $payment->setAdditionalInformation(OrderPaymentInterface::CC_TYPE, $ccType);

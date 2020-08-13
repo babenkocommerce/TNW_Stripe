@@ -87,10 +87,10 @@ class StripeAdapter
         } else {
             $pi = PaymentIntent::retrieve($attributes['pi']);
         }
+        if ($pi->status == 'requires_confirmation') {
+            $pi->confirm();
+        }
         if ($needCapture) {
-            if ($pi->status == 'requires_confirmation') {
-                $pi->confirm();
-            }
             $pi->capture(['amount' => $attributes['amount']]);
         }
         return $pi;
