@@ -93,7 +93,6 @@ class CardDetailsHandler implements HandlerInterface
         if (array_key_exists($ccType, $ccTypes)) {
             $ccType = $ccTypes[$ccType];
         }
-
         $payment->setCcLast4($ccLats4);
         $payment->setCcExpMonth($ccExpMonth);
         $payment->setCcExpYear($ccExpYear);

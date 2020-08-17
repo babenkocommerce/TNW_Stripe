@@ -19,6 +19,7 @@ use Stripe\Customer;
 use Stripe\Stripe;
 use Stripe\Charge;
 use Stripe\PaymentIntent;
+use Stripe\Refund;
 
 /**
  * Class StripeAdapter
@@ -61,8 +62,11 @@ class StripeAdapter
         if (!$chId) {
             throw new \Exception('Charge not found.');
         }
-        $ch = Charge::retrieve($chId);
-        return $ch->refund(['amount' => $amount]);
+        $refundData = ['charge' => $chId];
+        if ($amount) {
+            $refundData['amount'] = $amount;
+        }
+        return Refund::create($refundData);
     }
 
     /**
